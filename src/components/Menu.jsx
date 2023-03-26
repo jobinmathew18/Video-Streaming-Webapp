@@ -89,7 +89,7 @@ const Hr = styled.hr`
 `;
 
 const Login = styled.div`
-  padding-right: 5px;
+  padding-inline: 7px 5px;
 `;
 
 const Button = styled.div`
@@ -127,11 +127,11 @@ const Menu = ({ darkMode, setDarkMode }) => {
   return (
     <Container>
       <Wrapper>
-        <Link to='/' style={{textDecoration:"none"}}>
+        <Link to="/" style={{ textDecoration: "none" }}>
           <Logo>
             {darkMode && <Img src="/images/logoDark.png" />}
             {!darkMode && <ImgLight src="/images/logo.png" />}
-          </Logo >
+          </Logo>
         </Link>
         <Item>
           <Home /> Home
@@ -152,9 +152,11 @@ const Menu = ({ darkMode, setDarkMode }) => {
         <Hr />
         <Login>
           Sign in to like videos, comment and subscribe.
-          <Button>
-            <AccountCircleOutlined /> SIGN IN
-          </Button>
+          <Link to='/signin' style={{textDecoration: "none"}}>
+            <Button>
+              <AccountCircleOutlined /> SIGN IN
+            </Button>
+          </Link>
         </Login>
         <Hr />
         <Title>More form YouTube</Title>

@@ -5,6 +5,8 @@ import {
   ThumbUpOutlined,
 } from "@mui/icons-material";
 import styled from "styled-components";
+import Card from "../components/Card";
+import Comments from "../components/Comments";
 
 const Container = styled.div`
   display: flex;
@@ -94,7 +96,7 @@ const ChannelCounter = styled.span`
 
 const Desciption = styled.p`
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   background-color: ${({ theme }) => theme.bgLighter};
   padding: 5px 10px;
   border-radius: 7px;
@@ -169,8 +171,24 @@ const Video = () => {
           </ChannelInfo>
           <Subscribe>Subscribe</Subscribe>
         </Channel>
+        <Hr/>
+        <Comments/>
       </Content>
-      <Recommendation>recommendation</Recommendation>
+      <Recommendation>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+        <Card type="sm"/>
+      </Recommendation>
     </Container>
   );
 };
