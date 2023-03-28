@@ -1,7 +1,6 @@
 import {
   AccountCircleOutlined,
   ArticleOutlined,
-  ExploreOutlined,
   FlagOutlined,
   HelpOutlineOutlined,
   HistoryOutlined,
@@ -15,7 +14,9 @@ import {
   SportsEsportsOutlined,
   SubscriptionsOutlined,
   VideoLibraryOutlined,
+  WhatshotOutlined,
 } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -120,6 +121,8 @@ const Title = styled.h2`
 `;
 
 const Menu = ({ darkMode, setDarkMode }) => {
+  const { currentUser } = useSelector((state) => state.user);
+
   const changeMode = () => {
     setDarkMode(!darkMode);
   };
@@ -136,12 +139,22 @@ const Menu = ({ darkMode, setDarkMode }) => {
         <Item>
           <Home /> Home
         </Item>
-        <Item>
-          <ExploreOutlined /> Explore
-        </Item>
-        <Item>
-          <SubscriptionsOutlined /> Subscriptions
-        </Item>
+        <Link
+          to="/trending"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <WhatshotOutlined /> Trending
+          </Item>
+        </Link>
+        <Link
+          to="subscribed"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <SubscriptionsOutlined /> Subscriptions
+          </Item>
+        </Link>
         <Hr />
         <Item>
           <VideoLibraryOutlined /> Library
@@ -149,15 +162,19 @@ const Menu = ({ darkMode, setDarkMode }) => {
         <Item>
           <HistoryOutlined /> History
         </Item>
-        <Hr />
-        <Login>
-          Sign in to like videos, comment and subscribe.
-          <Link to='/signin' style={{textDecoration: "none"}}>
-            <Button>
-              <AccountCircleOutlined /> SIGN IN
-            </Button>
-          </Link>
-        </Login>
+        {!currentUser && 
+          <>
+            <Hr />
+            <Login>
+              Sign in to like videos, comment and subscribe.
+              <Link to="/signin" style={{ textDecoration: "none" }}>
+                <Button>
+                  <AccountCircleOutlined /> SIGN IN
+                </Button>
+              </Link>
+            </Login>
+          </>
+        }
         <Hr />
         <Title>More form YouTube</Title>
         <Item>

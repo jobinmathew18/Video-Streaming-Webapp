@@ -1,5 +1,8 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { format } from "timeago.js";
 
 const Container = styled.div`
   width: ${(props)=> props.type === 'sm' ? "350px" : "350px"};
@@ -57,17 +60,29 @@ const Info = styled.div`
   margin-top: 3px;
 `;
 
-const Card = ({type}) => {
+const Card = ({type, video}) => {
+  // console.log(video)
+
+  const [channel, setChannel] = useState({})
+
+  useEffect(()=>{
+    const fetchChannel = async ()=>{
+      const res = await axios.get(`/users/find/${video.userId}`)
+      setChannel(res.data)
+    }
+    fetchChannel();
+  }, [video.userId])
+  
   return (
     <Link to='/video/test' style={{textDecoration:"none"}}>
       <Container type={type}>
-        <Image type={type} src="/images/logo.png" />
+        <Image type={type} src={video.imgUrl} />
         <Details type={type}>
-          <ChannelImage type={type} src="/images/logo.png" />
+          <ChannelImage type={type} src={channel.img} />
           <Texts>
-            <Title type={type} >What is JWT and Why Should You Use JWT</Title>
-            <ChannelName type={type}>Jobin Mathew</ChannelName>
-            <Info type={type}>433K views . 1 day ago</Info> 
+            <Title type={type} >{video.title}</Title>  
+            <ChannelName type={type}>{channel.name}</ChannelName>
+            <Info type={type}>{video.views} views . {format(video.createdAt)}</Info> 
           </Texts>
         </Details>
       </Container>

@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Card from "../components/Card";
 
@@ -9,30 +11,26 @@ const Container = styled.div`
   gap: 40px;
 `;
 
-const Home = () => {
+const Home = ({type}) => {
+  const [videos, setVideos] = useState([])
+
+  useEffect(()=>{
+    const fetchVideos = async ()=>{
+      try {
+        const res = await axios.get(`/videos/${type}`)
+        setVideos(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchVideos() 
+  }, [type])                  //will only run once when the page refreshes
+
   return (
     <Container>
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-<Card />
-  
+      {
+        videos.map(video=> <Card key={video._id} video={video} />)
+      }
     </Container>
   );
 };

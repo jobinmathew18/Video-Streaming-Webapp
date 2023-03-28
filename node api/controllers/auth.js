@@ -13,7 +13,7 @@ export const signUp = async (req,res,next)=>{
     } catch (err) {
         next(err)
     }
-}
+} 
 
 export const signIn = async (req,res,next)=>{
     try {
@@ -25,10 +25,34 @@ export const signIn = async (req,res,next)=>{
         const token = jwt.sign({id:user._id}, process.env.JWT)
         const {password, ...others} = user
 
-        res.cookie("access_token", token, {
+        res.cookie("access_token", token, {                 //set token in cookies
             httpOnly: true
         }).status(200).json(others._doc)
     } catch (error) {
         next(error)
     } 
+} 
+
+export const googleAuth = async (req,res, next)=>{
+    try {
+        const user = await User.findOne({email: req.body.email});
+        if(user){
+            const token = jwt.sign({id:user._id}, process.env.JWT);
+            res.cookie("access_token", token, {
+                httpOnly: true
+            }).status(200).json(user._doc)
+        }else{
+            const newUser = new User({              //if there is not user then create new user and then set token in the cookies
+                ...req.body,
+                fromGoogle: true
+            })
+            const savedUser = await newUser.save()
+            const token = jwt.sign({id:savedUser._id}, process.env.JWT);
+            res.cookie("access_token", token, {
+                httpOnly: true
+            }).status(200).json(savedUser._doc)
+        }
+    } catch (error) {
+        next(error)
+    }
 }

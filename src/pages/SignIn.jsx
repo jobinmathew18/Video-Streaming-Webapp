@@ -1,5 +1,10 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
+import { auth, provider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const Container = styled.div`
   display: flex;
@@ -62,22 +67,88 @@ const Links = styled.div`
 `;
 
 const Link = styled.div`
-    margin-left: 30px;
+  margin-left: 30px;
 `;
 
 const SignIn = () => {
+  const [inputs, setInputs] = useState({});
+  const dispatch = useDispatch();
+
+  const handleChange = (e) => {
+    setInputs((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+  };
+  // console.log(inputs)
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    dispatch(loginStart());
+    const { email, password } = inputs;
+    try {
+      const res = await axios.post("/auth/signin", { email, password });
+      dispatch(loginSuccess(res.data));
+    } catch (error) {
+      dispatch(loginFailure());
+      console.log(error);
+    }
+  };
+
+  const signinWithGoogle = async () => {
+    dispatch(loginStart())
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // console.log(result);
+        axios.post('/auth/google',{
+          name: result.user.displayName,          //we will not send passowrd to req.body because we are using email of users that are logged in google and therefore google stores their password.
+          email: result.user.email,
+          img: result.user.photoURL
+        }).then((res)=>{
+          dispatch(loginSuccess(res.data))
+        })
+      })
+      .catch((error) => dispatch(loginFailure()));
+  };
+
   return (
     <Container>
       <Wrapper>
         <Title>Sign in</Title>
         <SubTitle>to continue to YouTube</SubTitle>
-        <Input type="text" placeholder="username" />
-        <Input type="password" placeholder="password" />
-        <Button>Sign in</Button>
+        <Input
+          type="email"
+          placeholder="email"
+          name="email"
+          onChange={handleChange}
+        />
+        <Input
+          type="password"
+          placeholder="password"
+          name="password"
+          onChange={handleChange}
+        />
+        <Button onClick={handleLogin}>Sign in</Button>
         <Title>or</Title>
-        <Input type="text" placeholder="username" />
-        <Input type="text" placeholder="email" />
-        <Input type="password" placeholder="password" />
+        <Button onClick={signinWithGoogle}>Signin with Google</Button>
+        <Title>or</Title>
+        <Input
+          type="text"
+          placeholder="username"
+          name="name"
+          onChange={handleChange}
+        />
+        <Input
+          type="email"
+          placeholder="email"
+          name="email"
+          onChange={handleChange}
+        />
+        <Input
+          type="password"
+          placeholder="password"
+          name="password"
+          onChange={handleChange}
+        />
         <Button>Sign up</Button>
       </Wrapper>
       <More>

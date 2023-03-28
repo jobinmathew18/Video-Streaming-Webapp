@@ -68,7 +68,7 @@ export const random = async (req, res, next) => {
         next(error)
     }
 }
-
+ 
 export const trending = async (req, res, next) => {
     try {
         const videos = await Video.find().sort({ views: -1 })
