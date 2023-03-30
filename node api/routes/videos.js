@@ -12,7 +12,7 @@ router.put('/:id', verifyToken, updateVideo)
 //DELETE A VIDEO
 router.delete('/:id', verifyToken, deleteVideo)
 
-//GET VIDEO
+//GET A VIDEO
 router.get('/find/:id', getVideo)
 
 //UPDATE/INCREASE VIEWS 

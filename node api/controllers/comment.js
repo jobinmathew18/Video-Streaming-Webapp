@@ -30,7 +30,6 @@ export const deleteComment = async(req,res,next)=>{
 export const getComments = async(req,res,next)=>{
     try {
         const comments = await Comment.find({videoId: req.params.videoId})
-        console.log(comments)
         res.status(200).json(comments)
     } catch (error) {
         next(error)

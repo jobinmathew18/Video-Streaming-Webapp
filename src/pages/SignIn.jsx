@@ -87,6 +87,7 @@ const SignIn = () => {
     const { email, password } = inputs;
     try {
       const res = await axios.post("/auth/signin", { email, password });
+      localStorage.setItem("loggedUser", JSON.stringify(res.data))
       dispatch(loginSuccess(res.data));
     } catch (error) {
       dispatch(loginFailure());

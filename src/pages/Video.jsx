@@ -1,12 +1,21 @@
 import {
   LibraryAdd,
   ReplyOutlined,
+  ThumbDown,
   ThumbDownOffAltOutlined,
+  ThumbUp,
   ThumbUpOutlined,
 } from "@mui/icons-material";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { format } from "timeago.js";
 import Card from "../components/Card";
 import Comments from "../components/Comments";
+import { subscription } from "../redux/userSlice";
+import { dislike, fetchSuccess, like } from "../redux/videoSlice";
 
 const Container = styled.div`
   display: flex;
@@ -103,46 +112,98 @@ const Desciption = styled.p`
 `;
 
 const Subscribe = styled.div`
-    background-color: #cc1a00;
-    font-weight: 500;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    height: max-content;
-    padding: 8px 16px;
-    cursor: pointer;
+  background-color: #cc1a00;
+  font-weight: 500;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  height: max-content;
+  padding: 8px 16px;
+  cursor: pointer;
 `;
 
 const Recommendation = styled.div`
   flex: 2;
 `;
 
+const VideoFrame = styled.video`
+  max-height: 600px;
+  width: 100%;
+  object-fit: cover;
+  background-color: red;
+`
+
 const Video = () => {
+  const { currentUser } = useSelector((state) => state.user);
+  const { currentVideo } = useSelector((state) => state.video);
+  // console.log(currentUser)
+  const dispatch = useDispatch();
+  const path = useLocation().pathname.split("/")[2];
+  const [channel, setChannel] = useState({});
+
+  useEffect(() => {
+    const fetchVideo = async () => {
+      console.log("first");
+      try {
+        const videoRes = await axios.get(`/videos/find/${path}`); //finding info about video
+        const userRes = await axios.get(`/users/find/${videoRes.data.userId}`); //finding info about user who uploaded that video
+        setChannel(userRes.data);
+        dispatch(fetchSuccess(videoRes.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchVideo();
+  }, [path, dispatch]);
+
+  const handleLike = async () => {
+    currentUser &&
+      (await axios.put(`/users/like/${currentVideo._id}`)) &&
+      dispatch(like(currentUser?._id));
+  };
+
+  const handleDislike = async () => {
+    currentUser &&
+      (await axios.put(`/users/dislike/${currentVideo._id}`)) &&
+      dispatch(dislike(currentUser?._id));
+  };
+
+  const handleSubscribe = async ()=>{
+    currentUser &&
+    currentUser.subscribedUsers.includes(channel._id)
+    ? await axios.put(`/users/unsub/${channel._id}`)
+    : await axios.put(`/users/sub/${channel._id}`)
+    dispatch(subscription(channel._id))
+  }
+  // console.log(currentUser.subscribedUsers)
+
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe
-            width="100%"
-            height="550"
-            src="https://www.youtube.com/embed/k3Vfj-e1Ma4"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+          <VideoFrame src={currentVideo?.videoUrl}/>
         </VideoWrapper>
-        <Title>What is JWT and Why Should You Use JWT</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
-          <Info>433,768 views . Mar 18, 2023</Info>
+          <Info>
+            {currentVideo?.views} views . {format(currentVideo?.createdAt)}
+          </Info>
           <Buttons>
-            <Button>
-              <ThumbUpOutlined />
-              1k
+            <Button onClick={handleLike}>
+              {currentVideo?.likes.includes(currentUser?._id) ? (
+                <ThumbUp />
+              ) : (
+                <ThumbUpOutlined />
+              )}
+              {currentVideo?.likes.length}
             </Button>
-            <Button>
-              <ThumbDownOffAltOutlined />
-              Dislike
+            <Button onClick={handleDislike}>
+              {currentVideo?.dislikes.includes(currentUser?._id) ? (
+                <ThumbDown />
+              ) : (
+                <ThumbDownOffAltOutlined />
+              )}
+              Dislikes
             </Button>
             <Button>
               <ReplyOutlined />
@@ -157,24 +218,25 @@ const Video = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src="/images/logo.png" />
+            <Image src={channel.img} />
             <ChannelDetail>
-              <ChannelName>Jobin Mathew</ChannelName>
-              <ChannelCounter>100K subscribers</ChannelCounter>
-              <Desciption>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum
-                sequi at excepturi voluptatum consectetur, dicta pariatur odit
-                tenetur, neque soluta suscipit magni fugiat quo eius quibusdam
-                error itaque? Reiciendis, numquam!
-              </Desciption>
+              <ChannelName>{channel.name}</ChannelName>
+              <ChannelCounter>{channel.subscribers?.length} subscribers</ChannelCounter>
+              {currentVideo?.desc && (
+                <Desciption>{currentVideo.desc}</Desciption>
+              )}
             </ChannelDetail>
           </ChannelInfo>
-          <Subscribe>Subscribe</Subscribe>
+          <Subscribe onClick={handleSubscribe}>
+            {currentUser?.subscribedUsers.includes(channel._id)
+              ? "Unsubscribe"
+              : "Subscribe"}
+          </Subscribe>
         </Channel>
-        <Hr/>
-        <Comments/>
+        <Hr />
+        <Comments videoId={currentVideo?._id}/>
       </Content>
-      <Recommendation>
+      {/* <Recommendation>
         <Card type="sm"/>
         <Card type="sm"/>
         <Card type="sm"/>
@@ -188,7 +250,7 @@ const Video = () => {
         <Card type="sm"/>
         <Card type="sm"/>
         <Card type="sm"/>
-      </Recommendation>
+      </Recommendation> */}
     </Container>
   );
 };

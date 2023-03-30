@@ -19,7 +19,7 @@ router.put("/sub/:id", verifyToken, subscribe)
 router.put("/unsub/:id", verifyToken, unsubscribe)
 
 //LIKE A VIDEO
-router.put("/like/:videoId", verifyToken, like)
+router.put("/like/:videoId", verifyToken, like) 
 
 //DISLIKE A VIDEO
 router.put("/dislike/:videoId", verifyToken, dislike) 

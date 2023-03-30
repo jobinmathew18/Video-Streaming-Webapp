@@ -1,7 +1,13 @@
-import { AccountCircleOutlined, SearchOutlined, VideoCallOutlined } from "@mui/icons-material";
+import {
+  AccountCircleOutlined,
+  SearchOutlined,
+  VideoCallOutlined,
+} from "@mui/icons-material";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import Upload from "./Upload";
 
 const Container = styled.div`
   position: sticky;
@@ -86,44 +92,49 @@ const User = styled.div`
   gap: 20px;
   font-weight: 500;
   color: ${({ theme }) => theme.text};
-`
+`;
 
 const Avatar = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background-color: #999;
-`
+`;
+
 const Navbar = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const [open, setOpen] = useState(false);
   return (
-    <Container>
-      <Wrapper>
-        <Left>
-          <Search>
-            <Input placeholder="Search" />
-            <Icon>
-              <SearchOutlined />
-            </Icon>
-          </Search>
-        </Left>
-        <Sign>
-          {currentUser ? (
-            <User>
-              <VideoCallOutlined/>
-              <Avatar src={currentUser.img}/>
-              {currentUser.name}
-            </User>
-          ) : (
-            <Link to="/signin" style={{ textDecoration: "none" }}>
-              <Button>
-                <AccountCircleOutlined /> SIGN IN
-              </Button>
-            </Link>
-          )}
-        </Sign>
-      </Wrapper>
-    </Container>
+    <>
+      <Container>
+        <Wrapper>
+          <Left>
+            <Search>
+              <Input placeholder="Search" />
+              <Icon>
+                <SearchOutlined />
+              </Icon>
+            </Search>
+          </Left>
+          <Sign>
+            {currentUser ? (
+              <User>
+                <VideoCallOutlined onClick={() => setOpen(true)} style={{cursor: "pointer"}}/>
+                <Avatar src={currentUser.img} />
+                {currentUser.name}
+              </User>
+            ) : (
+              <Link to="/signin" style={{ textDecoration: "none" }}>
+                <Button>
+                  <AccountCircleOutlined /> SIGN IN
+                </Button>
+              </Link>
+            )}
+          </Sign>
+        </Wrapper>
+      </Container>
+      {open && <Upload setOpen={setOpen}/>}
+    </>
   );
 };
 

@@ -1,8 +1,51 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+    currentVideo: null,
+    loading: false,
+    error: false
+}
+
 export const videoSlice = createSlice({
-    name:"video"
+    name: "video",
+    initialState,
+    reducers: {
+        fetchStart: (state) => {
+            state.loading = true
+        },
+        fetchSuccess: (state, action) => {
+            state.currentVideo = action.payload
+            state.loading = false
+            state.error = false
+        },
+        fetchFailure: (state) => {
+            state.loading = false
+            state.error = true
+        },
+        like: (state, action) => {
+            const index = state.currentVideo.dislikes.findIndex(userId => userId === action.payload)
+            if(index > -1){
+                state.currentVideo.dislikes.splice(index, 1)   //removing from dislikes
+            }
+            if (state.currentVideo.likes.includes(action.payload)) {
+                state.currentVideo.likes.splice(state.currentVideo.likes.findIndex(userId => userId === action.payload), 1)
+            } else {
+                state.currentVideo.likes.push(action.payload)
+            }
+        },
+        dislike: (state, action) => {  
+            const index = state.currentVideo.likes.findIndex(userId => userId === action.payload)   
+            if(index > -1){
+                state.currentVideo.likes.splice(index, 1)       //removing from likes
+            }
+            if (state.currentVideo.dislikes.includes(action.payload)) {
+                state.currentVideo.dislikes.splice(state.currentVideo.dislikes.findIndex(userId => userId === action.payload), 1)
+            } else {
+                state.currentVideo.dislikes.push(action.payload)
+            }
+        }
+    }
 })
 
-export const{ } = videoSlice.actions
+export const { fetchStart, fetchSuccess, fetchFailure, like, dislike } = videoSlice.actions
 export default videoSlice.reducer
