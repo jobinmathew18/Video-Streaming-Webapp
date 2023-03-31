@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { format } from "timeago.js";
+import UserImage from "./UserImage";
 
 const Container = styled.div`
   display: flex;
@@ -9,11 +10,17 @@ const Container = styled.div`
   margin: 30px 0;
 `;
 
-const Avatar = styled.img`
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
+const Avatar = styled.div`
+  height: 32px;
+  min-width: 32px;
+  margin-left: 20px;
+`;
+
+const Image = styled.img`
+  height: 100%;
+  width: 100%;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const Details = styled.div`
@@ -54,7 +61,13 @@ const Comment = ({comment}) => {
 
   return (
     <Container>
-      <Avatar src={channel.img} />
+      <Avatar>
+          {channel.img ? (
+            <Image src={channel.img} />
+          ) : (
+            <UserImage name={channel.name} color="d4d4ce" />
+          )}
+        </Avatar>
       <Details>
         <Name>
           {channel.name} <Date>{ format(comment.createdAt) }</Date>{" "}

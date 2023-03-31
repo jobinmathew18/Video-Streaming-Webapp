@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Card from "../components/Card";
 
@@ -15,33 +16,32 @@ const Container = styled.div`
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   flex-wrap: wrap;
   padding: 8px 20px;
   gap: 40px;
 `;
 
-const Home = ({ type }) => { 
+const Search = () => {
   const [videos, setVideos] = useState([]);
+  const location = useLocation();
+  const query = location.search;
+//   console.log(query);
 
   useEffect(() => {
     const fetchVideos = async () => {
-      try {
-        const res = await axios.get(`/videos/${type}`);
-        setVideos(res.data);
-      } catch (error) {
-        console.log(error);
-      }
+      const res = await axios.get(`/videos/search${query}`);
+      setVideos(res.data);
     };
     fetchVideos();
-  }, [type]); //will only run once when the page refreshes
+  }, [query]);
 
   return (
     <Center>
       <Container>
         <Wrapper>
           {videos.map((video) => (
-            <Card key={video._id} video={video} /> 
+            <Card key={video._id} video={video} />
           ))}
         </Wrapper>
       </Container>
@@ -49,4 +49,4 @@ const Home = ({ type }) => {
   );
 };
 
-export default Home;
+export default Search;

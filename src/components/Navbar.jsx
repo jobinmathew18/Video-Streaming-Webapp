@@ -5,9 +5,10 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Upload from "./Upload";
+import UserImage from "./UserImage";
 
 const Container = styled.div`
   position: sticky;
@@ -89,30 +90,43 @@ const Icon = styled.span`
 const User = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   font-weight: 500;
   color: ${({ theme }) => theme.text};
 `;
 
-const Avatar = styled.img`
-  width: 32px;
+const Avatar = styled.div`
   height: 32px;
+  min-width: 32px;
+  margin-left: 20px;
+`;
+
+const Image = styled.img`
+  height: 100%;
+  width: 100%;
   border-radius: 50%;
-  background-color: #999;
+  object-fit: cover;
 `;
 
 const Navbar = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate()
+
+  const handleSearch =()=>{
+    query.length>0 && navigate(`/search?q=${query}`)
+  }
+
   return (
     <>
       <Container>
         <Wrapper>
           <Left>
             <Search>
-              <Input placeholder="Search" />
+              <Input placeholder="Search" onChange={(e)=> setQuery(e.target.value)}/>
               <Icon>
-                <SearchOutlined />
+                <SearchOutlined style={{cursor: "pointer"}} onClick={handleSearch}/>
               </Icon>
             </Search>
           </Left>
@@ -120,7 +134,9 @@ const Navbar = () => {
             {currentUser ? (
               <User>
                 <VideoCallOutlined onClick={() => setOpen(true)} style={{cursor: "pointer"}}/>
-                <Avatar src={currentUser.img} />
+                <Avatar>
+                  {currentUser.img ? <Image src={currentUser.img} /> : <UserImage name={currentUser.name} color="a0a0e2"/>}
+                </Avatar>
                 {currentUser.name}
               </User>
             ) : (

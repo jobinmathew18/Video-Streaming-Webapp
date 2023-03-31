@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { format } from "timeago.js";
+import UserImage from "./UserImage";
 
 const Container = styled.div`
   width: ${(props)=> props.type === 'sm' ? "350px" : "350px"};
@@ -18,7 +19,7 @@ const Image = styled.img`
   width: ${(props)=> props.type === 'sm' ? "45%" : "100%"};
   height: ${(props)=> props.type === 'sm' ? "86px" : "202px"};
   background-color: #999;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 13px;
 `;
 
@@ -28,15 +29,18 @@ const Details = styled.div`
   gap: 12px;
 `;
 
-const ChannelImage = styled.img`
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #999;
-  object-fit: cover;
+const Avatar = styled.div`
+  height: 32px;
+  min-width: 32px;
   display: ${(props)=> props.type === 'sm' && "none"};
 `;
 
+const ChannelImage = styled.img`
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+`;
 const Texts = styled.div``;
 
 const Title = styled.h1`
@@ -59,9 +63,9 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
   margin-top: 3px;
 `;
-
+ 
 const Card = ({type, video}) => {
-  // console.log(video)
+  // console.log(type)
 
   const [channel, setChannel] = useState({})
 
@@ -71,14 +75,16 @@ const Card = ({type, video}) => {
       setChannel(res.data)
     }
     fetchChannel();
-  }, [video.userId])
+  }, [video.userId]) 
   
   return (
     <Link to={`/video/${video._id}`} style={{textDecoration:"none"}}>
       <Container type={type}>
         <Image type={type} src={video.imgUrl} />
         <Details type={type}>
-          <ChannelImage type={type} src={channel.img} />
+          <Avatar type={type}>
+            {channel.img ? <ChannelImage type={type} src={channel.img} /> : <UserImage name={channel.name} color="e19696"/>}
+          </Avatar>
           <Texts>
             <Title type={type} >{video.title}</Title>  
             <ChannelName type={type}>{channel.name}</ChannelName>

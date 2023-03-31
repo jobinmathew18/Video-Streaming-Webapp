@@ -14,6 +14,8 @@ import styled from "styled-components";
 import { format } from "timeago.js";
 import Card from "../components/Card";
 import Comments from "../components/Comments";
+import Recommendation from "../components/Recommendation";
+import UserImage from "../components/UserImage";
 import { subscription } from "../redux/userSlice";
 import { dislike, fetchSuccess, like } from "../redux/videoSlice";
 
@@ -79,9 +81,14 @@ const ChannelInfo = styled.div`
   gap: 20px;
 `;
 
+const Avatar = styled.div`
+  height: 40px;
+  min-width: 40px;
+  `;
+
 const Image = styled.img`
-  height: 50px;
-  width: 50px;
+  height: 100%;
+  width: 100%;
   border-radius: 50%;
   object-fit: cover;
 `;
@@ -122,16 +129,12 @@ const Subscribe = styled.div`
   cursor: pointer;
 `;
 
-const Recommendation = styled.div`
-  flex: 2;
-`;
-
 const VideoFrame = styled.video`
   max-height: 600px;
   width: 100%;
   object-fit: cover;
-  background-color: red;
-`
+  background-color: transparent;
+`;
 
 const Video = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -143,7 +146,6 @@ const Video = () => {
 
   useEffect(() => {
     const fetchVideo = async () => {
-      console.log("first");
       try {
         const videoRes = await axios.get(`/videos/find/${path}`); //finding info about video
         const userRes = await axios.get(`/users/find/${videoRes.data.userId}`); //finding info about user who uploaded that video
@@ -168,20 +170,19 @@ const Video = () => {
       dispatch(dislike(currentUser?._id));
   };
 
-  const handleSubscribe = async ()=>{
-    currentUser &&
-    currentUser.subscribedUsers.includes(channel._id)
-    ? await axios.put(`/users/unsub/${channel._id}`)
-    : await axios.put(`/users/sub/${channel._id}`)
-    dispatch(subscription(channel._id))
-  }
+  const handleSubscribe = async () => {
+    currentUser && currentUser.subscribedUsers.includes(channel._id)
+      ? await axios.put(`/users/unsub/${channel._id}`)
+      : await axios.put(`/users/sub/${channel._id}`);
+    dispatch(subscription(channel._id));
+  };
   // console.log(currentUser.subscribedUsers)
 
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <VideoFrame src={currentVideo?.videoUrl}/>
+          <VideoFrame src={currentVideo?.videoUrl} autoPlay controls />
         </VideoWrapper>
         <Title>{currentVideo?.title}</Title>
         <Details>
@@ -218,10 +219,14 @@ const Video = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src={channel.img} />
+            <Avatar>
+              {channel.img ? <Image src={channel.img} /> : <UserImage name={channel.name} color="e19696"/>}
+            </Avatar>
             <ChannelDetail>
               <ChannelName>{channel.name}</ChannelName>
-              <ChannelCounter>{channel.subscribers?.length} subscribers</ChannelCounter>
+              <ChannelCounter>
+                {channel.subscribers?.length} subscribers
+              </ChannelCounter>
               {currentVideo?.desc && (
                 <Desciption>{currentVideo.desc}</Desciption>
               )}
@@ -234,23 +239,9 @@ const Video = () => {
           </Subscribe>
         </Channel>
         <Hr />
-        <Comments videoId={currentVideo?._id}/>
+        <Comments videoId={currentVideo?._id} />
       </Content>
-      {/* <Recommendation>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-      </Recommendation> */}
+      <Recommendation tags={currentVideo?.tags} />
     </Container>
   );
 };
