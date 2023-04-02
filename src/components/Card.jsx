@@ -24,6 +24,7 @@ const Image = styled.img`
 `;
 
 const Details = styled.div`
+  width: ${(props)=> props.type === 'sm' ? "55%" : "100%"};
   display: flex;
   margin-top: ${(props)=> props.type === 'sm' ? "0px" : "13px"};
   gap: 12px;

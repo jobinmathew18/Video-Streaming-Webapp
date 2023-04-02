@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { format } from "timeago.js";
-import Card from "../components/Card";
 import Comments from "../components/Comments";
 import Recommendation from "../components/Recommendation";
 import UserImage from "../components/UserImage";
@@ -143,6 +142,7 @@ const Video = () => {
   const dispatch = useDispatch();
   const path = useLocation().pathname.split("/")[2];
   const [channel, setChannel] = useState({});
+  const[subscribers, setSubscribers] = useState(0)
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -150,6 +150,7 @@ const Video = () => {
         const videoRes = await axios.get(`/videos/find/${path}`); //finding info about video
         const userRes = await axios.get(`/users/find/${videoRes.data.userId}`); //finding info about user who uploaded that video
         setChannel(userRes.data);
+        setSubscribers(userRes.data.subscribers.length) 
         dispatch(fetchSuccess(videoRes.data));
       } catch (error) {
         console.log(error);
@@ -172,10 +173,10 @@ const Video = () => {
 
   const handleSubscribe = async () => {
     currentUser && currentUser.subscribedUsers.includes(channel._id)
-      ? await axios.put(`/users/unsub/${channel._id}`)
-      : await axios.put(`/users/sub/${channel._id}`);
+      ? await axios.put(`/users/unsub/${channel._id}`) && setSubscribers(subscribers - 1)
+      : await axios.put(`/users/sub/${channel._id}`) && setSubscribers(subscribers + 1);
     dispatch(subscription(channel._id));
-  };
+  }; 
   // console.log(currentUser.subscribedUsers)
 
   return (
@@ -225,7 +226,7 @@ const Video = () => {
             <ChannelDetail>
               <ChannelName>{channel.name}</ChannelName>
               <ChannelCounter>
-                {channel.subscribers?.length} subscribers
+                {subscribers} subscribers
               </ChannelCounter>
               {currentVideo?.desc && (
                 <Desciption>{currentVideo.desc}</Desciption>

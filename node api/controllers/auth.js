@@ -47,11 +47,20 @@ export const googleAuth = async (req,res, next)=>{
                 fromGoogle: true
             })
             const savedUser = await newUser.save()
-            const token = jwt.sign({id:savedUser._id}, process.env.JWT);
+            const token = jwt.sign({id:savedUser._id}, process.env.JWT, {expiresIn: "3d"});
             res.cookie("access_token", token, {
                 httpOnly: true
             }).status(200).json(savedUser._doc)
         }
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const signout = (req,res,next)=>{
+    try {
+        res.clearCookie('access_token')
+        res.status(200).json("User Logged out!")
     } catch (error) {
         next(error)
     }

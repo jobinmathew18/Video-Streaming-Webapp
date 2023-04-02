@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteUser, dislike, getUser, like, subscribe, unsubscribe, update } from '../controllers/user.js';
+import { deleteUser, dislike, getCurrentUser, getUser, like, subscribe, unsubscribe, update } from '../controllers/user.js';
 import { verifyToken } from '../verifyToken.js';
 const router = express.Router()
 
@@ -10,7 +10,10 @@ router.put('/:id', verifyToken, update)
 router.delete('/:id', verifyToken, deleteUser)
 
 //GET A USER
-router.get('/find/:id', getUser)
+router.get('/find/:id', getUser, getCurrentUser)
+
+//GET CURRENT USER
+router.get('/currentUser', verifyToken, getCurrentUser)
 
 //SUBSCRIBE A USER
 router.put("/sub/:id", verifyToken, subscribe)

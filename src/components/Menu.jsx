@@ -130,15 +130,17 @@ const Menu = ({ darkMode, setDarkMode }) => {
   return (
     <Container>
       <Wrapper>
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link to="/" style={{ textDecoration: "none"}}>
           <Logo>
             {darkMode && <Img src="/images/logoDark.png" />}
             {!darkMode && <ImgLight src="/images/logo.png" />}
           </Logo>
         </Link>
-        <Item>
-          <Home /> Home
-        </Item>
+        <Link to="/" style={{ textDecoration: "none", color:"inherit" }}>
+          <Item>
+            <Home /> Home
+          </Item>
+        </Link>
         <Link
           to="/trending"
           style={{ textDecoration: "none", color: "inherit" }}
