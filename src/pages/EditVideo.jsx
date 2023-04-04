@@ -132,6 +132,7 @@ const EditVideo = () => {
   const videoId = location.pathname.split("/")[3];
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [tags,setTags] = useState([])
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -149,9 +150,13 @@ const EditVideo = () => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
+  const hangleTagsChange = (e)=>{
+    setTags(e.target.value.split(','))
+  }
+
   const handleUpdate = async () => {
     try {
-      await axios.put(`/videos/${videoId}`, inputs);
+      await axios.put(`/videos/${videoId}`, {inputs, tags});
       navigate(`/video/${videoId}`);
     } catch (error) {
       console.log(error);
@@ -196,7 +201,7 @@ const EditVideo = () => {
             <Input
               defaultValue={video.tags}
               name="tags"
-              onChange={handleChange}
+              onChange={hangleTagsChange}
             />
           </Item>
           <Buttons>

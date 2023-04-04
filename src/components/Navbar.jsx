@@ -263,7 +263,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                   </Avatar>
                   <RightInfo>
                     <Info>{currentUser.name}</Info>
-                    <Info>@{currentUser.email}</Info>
+                    <Info>{currentUser.email}</Info>
                   </RightInfo>
                 </UserInfo>
                 <Hr />

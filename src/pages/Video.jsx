@@ -151,7 +151,8 @@ const Video = () => {
         const userRes = await axios.get(`/users/find/${videoRes.data.userId}`); //finding info about user who uploaded that video
         setChannel(userRes.data);
         setSubscribers(userRes.data.subscribers.length) 
-        dispatch(fetchSuccess(videoRes.data));
+        dispatch(fetchSuccess(videoRes.data)); 
+        await axios.put(`/videos/view/${path}`)
       } catch (error) {
         console.log(error);
       }

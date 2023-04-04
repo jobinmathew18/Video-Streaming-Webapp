@@ -73,8 +73,16 @@ const Link = styled.div`
 
 const SignIn = () => {
   const [inputs, setInputs] = useState({});
+  const [credentials, setCredentials] = useState({}) 
   const dispatch = useDispatch();
   const navigate = useNavigate()
+
+  const handleSignChange = (e)=>{
+    setCredentials((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+  } 
+  // console.log(credentials)
 
   const handleChange = (e) => {
     setInputs((prev) => {
@@ -82,6 +90,18 @@ const SignIn = () => {
     });
   };
   // console.log(inputs)
+
+  const handleSignup = async (e)=>{
+    e.preventDefault();
+    const {name,email,password} = credentials;
+    try {
+      await axios.post('/auth/signup', {name,email,password})
+      setCredentials({})
+      navigate('/signin')
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -141,21 +161,21 @@ const SignIn = () => {
           type="text"
           placeholder="username"
           name="name"
-          onChange={handleChange}
+          onChange={handleSignChange}
         />
         <Input
           type="email"
           placeholder="email"
           name="email"
-          onChange={handleChange}
+          onChange={handleSignChange}
         />
         <Input
           type="password"
           placeholder="password"
           name="password"
-          onChange={handleChange}
+          onChange={handleSignChange}
         />
-        <Button>Sign up</Button>
+        <Button onClick={handleSignup}>Sign up</Button>
       </Wrapper>
       <More>
         English(USA)
