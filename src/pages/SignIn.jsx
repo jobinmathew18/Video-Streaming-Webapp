@@ -109,7 +109,6 @@ const SignIn = () => {
     const { email, password } = inputs;
     try {
       const res = await axios.post("/auth/signin", { email, password });
-      // localStorage.setItem("loggedUser", JSON.stringify(res.data))
       dispatch(loginSuccess(res.data));
       navigate('/')
     } catch (error) {
@@ -128,7 +127,6 @@ const SignIn = () => {
           email: result.user.email,
           img: result.user.photoURL
         }).then((res)=>{
-          // localStorage.setItem("loggedUser", JSON.stringify(res.data))
           dispatch(loginSuccess(res.data))
           navigate('/')
         })
